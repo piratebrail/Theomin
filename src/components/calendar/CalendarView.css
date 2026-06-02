@@ -1,0 +1,335 @@
+/* ===== CALENDAR HEADER ===== */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) 0;
+  margin-bottom: var(--space-lg);
+}
+
+.calendar-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.calendar-header__title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  min-width: 200px;
+  text-align: center;
+}
+
+/* View toggle */
+.calendar-header__view-toggle {
+  display: flex;
+  background: var(--bg-base);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.view-toggle__btn {
+  padding: 6px 16px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.view-toggle__btn.active {
+  background: var(--accent-base);
+  color: white;
+}
+
+.view-toggle__btn:hover:not(.active) {
+  background: var(--bg-elevated);
+}
+
+.calendar-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* ===== TIME GRID ===== */
+.time-grid-container {
+  display: flex;
+  align-items: flex-start; /* Impede que flex items fiquem restritos ao clientHeight */
+  height: calc(100vh - 140px);
+  overflow-y: auto;
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  --calendar-hour-height: 64px;
+  --calendar-gutter: 60px;
+  --calendar-line-color: var(--border-subtle);
+}
+
+/* Gutter (coluna de horas) */
+.time-gutter {
+  width: var(--calendar-gutter);
+  flex-shrink: 0;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.time-gutter__spacer {
+  height: 72px; /* Força mesma altura do day-column__header */
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  background: var(--bg-deep);
+  z-index: 11;
+}
+
+.time-gutter__hour {
+  height: var(--calendar-hour-height);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0 var(--space-sm);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  transform: translateY(-6px);
+}
+
+/* Grid area */
+.time-grid {
+  flex: 1;
+  position: relative;
+  height: 1536px; /* 24 * 64px */
+  min-height: 1536px;
+}
+
+.time-grid__hour-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--calendar-line-color);
+  pointer-events: none;
+}
+
+/* ===== WEEK VIEW ===== */
+.week-view {
+  display: flex;
+  flex: 1;
+}
+
+.day-column {
+  flex: 1;
+  position: relative;
+}
+
+.day-column:last-child {
+}
+
+.day-column__header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  background: var(--bg-deep);
+  z-index: 10;
+  height: 72px; /* Mesma altura que time-gutter__spacer */
+}
+
+.day-column__weekday {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+
+.day-column__date {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.day-column__date:hover {
+  background: var(--bg-elevated);
+}
+
+.day-column__date--today {
+  background: var(--accent-base);
+  color: white;
+}
+
+/* ===== TASK BLOCK ===== */
+.task-block {
+  position: absolute;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+  display: flex;
+  background: var(--block-color);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.task-block:hover {
+  box-shadow: var(--shadow-md);
+  transform: scale(1.01);
+  z-index: 5;
+}
+
+.task-block--completed {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.task-block--completed:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.task-block__color-stripe {
+  width: 3px;
+  background: var(--block-color);
+  flex-shrink: 0;
+}
+
+.task-block__content {
+  flex: 1;
+  padding: 2px 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.task-block__name {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-block__meta {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-block__complete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 2px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  opacity: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.task-block:hover .task-block__complete {
+  opacity: 1;
+}
+
+.task-block__complete:hover {
+  background: var(--color-success);
+  color: white;
+}
+
+.task-block__pin {
+  font-size: 10px;
+  padding: 2px;
+}
+
+/* ===== BREAK BLOCK ===== */
+.break-block {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed var(--border-subtle);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.break-block__label {
+  font-size: 9px;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ===== NOW INDICATOR ===== */
+.now-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.now-indicator__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  position: absolute;
+  left: -5px;
+  top: -4px;
+}
+
+.now-indicator__line {
+  height: 2px;
+  background: var(--color-danger);
+  width: 100%;
+}
+
+/* ===== UNAVAILABLE BLOCK ===== */
+.time-grid__unavailable {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.02) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.task-block {
+  z-index: 2;
+}
+
+.task-block:hover {
+  z-index: 5;
+}
+

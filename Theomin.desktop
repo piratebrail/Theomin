@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Theomin
+Comment=Iniciar o Theomin
+Exec=/home/piratebrail/Repos/Theomin/Start-Theomin-Linux.sh
+Icon=/home/piratebrail/Repos/Theomin/public/icon.png
+Terminal=false
+Type=Application
+Categories=Utility;
