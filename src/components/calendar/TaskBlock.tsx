@@ -1,7 +1,8 @@
 import { useTaskStore } from '@/stores/taskStore';
 import { useClassStore } from '@/stores/classStore';
 import { ScheduledBlock } from '@/types/block';
-import { Check, RotateCcw } from 'lucide-react';
+import { Check, RotateCcw, Trash2 } from 'lucide-react';
+import { useToast } from '@/components/ui/Toast';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { useCalendarStore } from '@/stores/calendarStore';
@@ -18,7 +19,9 @@ export function TaskBlock({ block, top, height, isPast = false }: TaskBlockProps
   const taskClass = useClassStore(state => state.classes.find(c => c.id === task?.classId));
   const completeBlock = useTaskStore(state => state.completeBlock);
   const uncompleteBlock = useTaskStore(state => state.uncompleteBlock);
+  const deleteBlockWithUndo = useTaskStore(state => state.deleteBlockWithUndo);
   const setEditingTaskId = useCalendarStore(state => state.setEditingTaskId);
+  const toast = useToast();
   
   if (!task) return null;
 
@@ -62,31 +65,46 @@ export function TaskBlock({ block, top, height, isPast = false }: TaskBlockProps
         )}
       </div>
       
-      {!isCompleted && !isPast && (
+      <div className="task-block__actions">
         <button 
           className="task-block__complete"
-          onClick={(e) => { 
+          onClick={async (e) => { 
             e.stopPropagation(); 
-            completeBlock(block.id); 
+            const undoFn = await deleteBlockWithUndo(block.id); 
+            toast.info("Bloco excluído", { actionLabel: "Desfazer", onAction: undoFn });
           }}
-          title="Marcar como concluído"
+          title="Excluir bloco (reduzir tempo da tarefa)"
+          style={{ color: 'var(--color-danger)' }}
         >
-          <Check size={14} />
+          <Trash2 size={14} />
         </button>
-      )}
 
-      {isCompleted && (
-        <button 
-          className="task-block__complete"
-          onClick={(e) => { 
-            e.stopPropagation(); 
-            uncompleteBlock(block.id); 
-          }}
-          title="Desfazer conclusão"
-        >
-          <RotateCcw size={14} />
-        </button>
-      )}
+        {!isCompleted && !isPast && (
+          <button 
+            className="task-block__complete"
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              completeBlock(block.id); 
+            }}
+            title="Marcar como concluído"
+          >
+            <Check size={14} />
+          </button>
+        )}
+
+        {isCompleted && (
+          <button 
+            className="task-block__complete"
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              uncompleteBlock(block.id); 
+            }}
+            title="Desfazer conclusão"
+          >
+            <RotateCcw size={14} />
+          </button>
+        )}
+      </div>
       
       {task.isFixedTime && (
         <span className="task-block__pin" title="Horário fixo">📌</span>

@@ -15,16 +15,24 @@ export function CommitmentNotesModal({ commitment, onClose }: CommitmentNotesMod
   const { updateCommitment } = useCommitmentStore();
   const toast = useToast();
   
+  const [title, setTitle] = useState(commitment.title);
+  const [date, setDate] = useState(commitment.date.split('T')[0]);
   const [notes, setNotes] = useState(commitment.notes || '');
   const [linkedFiles, setLinkedFiles] = useState<string[]>(commitment.linkedFiles || []);
   const [newFile, setNewFile] = useState('');
   
   const handleSave = async () => {
+    if (!title.trim() || !date) {
+      toast.error('O título e a data são obrigatórios.');
+      return;
+    }
     await updateCommitment(commitment.id, {
+      title: title.trim(),
+      date,
       notes,
       linkedFiles
     });
-    toast.success('Anotações salvas com sucesso!');
+    toast.success('Compromisso salvo com sucesso!');
     onClose();
   };
 
@@ -55,9 +63,45 @@ export function CommitmentNotesModal({ commitment, onClose }: CommitmentNotesMod
   );
 
   return (
-    <Modal isOpen={true} onClose={onClose} title={`Notas: ${commitment.title}`} footer={footer}>
+    <Modal isOpen={true} onClose={onClose} title="Editar Compromisso" footer={footer}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
         
+        {/* Título e Data */}
+        <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-xs)', fontWeight: 'var(--weight-bold)' }}>Nome do Compromisso</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Ex: Pagar a conta de luz"
+              style={{
+                padding: 'var(--space-sm) var(--space-md)',
+                background: 'var(--bg-deep)',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: 'var(--radius-md)',
+                color: 'var(--text-primary)'
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-xs)', fontWeight: 'var(--weight-bold)' }}>Data</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              style={{
+                padding: 'var(--space-sm) var(--space-md)',
+                background: 'var(--bg-deep)',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: 'var(--radius-md)',
+                color: 'var(--text-primary)',
+                fontFamily: 'inherit'
+              }}
+            />
+          </div>
+        </div>
+
         {/* Anotações */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-xs)', fontWeight: 'var(--weight-bold)' }}>

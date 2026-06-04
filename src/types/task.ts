@@ -40,6 +40,9 @@ export interface Task {
   /** IDs das tarefas das quais esta depende (predecessoras) */
   dependsOn: TaskId[];
   
+  /** ID do compromisso importante vinculado */
+  commitmentId?: string;
+  
   /** Se é uma tarefa recorrente */
   isRecurring: boolean;
   

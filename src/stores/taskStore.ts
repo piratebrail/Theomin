@@ -26,6 +26,7 @@ interface TaskState {
   completeBlock: (blockId: string) => Promise<void>;
   uncompleteBlock: (blockId: string) => Promise<void>;
   updateBlock: (blockId: string, updates: Partial<ScheduledBlock>) => Promise<void>;
+  deleteBlockWithUndo: (blockId: string) => Promise<() => Promise<void>>;
 }
 
 export const useTaskStore = create<TaskState>((set, get) => ({
@@ -282,5 +283,77 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     // Since manual placements resist recalc, we might just fire recalculate 
     // to let the engine fit other tasks around this newly pinned block.
     window.dispatchEvent(new CustomEvent('theomin:recalculate'));
+  },
+
+  deleteBlockWithUndo: async (blockId) => {
+    const state = get();
+    const block = state.blocks.find(b => b.id === blockId);
+    if (!block) return async () => {};
+    
+    const task = state.tasks.find(t => t.id === block.taskId);
+    if (!task) return async () => {};
+
+    const durationToReduce = timeToMinutes(block.endTime) - timeToMinutes(block.startTime);
+    const isCompleted = block.status === 'completed';
+
+    // Criar snapshots para a funcionalidade de Desfazer
+    const taskSnapshot = { ...task };
+    const blockSnapshot = { ...block };
+
+    // Apagar bloco
+    await db.blocks.delete(block.id);
+    const newBlocks = state.blocks.filter(b => b.id !== block.id);
+    
+    const newTotalDuration = task.totalDuration - durationToReduce;
+    const newCompletedDuration = isCompleted ? Math.max(0, task.completedDuration - durationToReduce) : task.completedDuration;
+    
+    let newTasks = state.tasks;
+    
+    if (newTotalDuration <= 0) {
+      // Se era o último tempo da tarefa, excluir a tarefa completamente
+      await db.tasks.delete(task.id);
+      newTasks = newTasks.filter(t => t.id !== task.id);
+    } else {
+      let newStatus = task.status;
+      if (!task.isRecurring) {
+        if (newCompletedDuration >= newTotalDuration) newStatus = 'completed';
+        else if (newCompletedDuration > 0) newStatus = 'in_progress';
+        else newStatus = 'pending';
+      }
+
+      const updates: Partial<Task> = {
+        totalDuration: newTotalDuration,
+        completedDuration: newCompletedDuration,
+        status: newStatus,
+        updatedAt: new Date().toISOString()
+      };
+
+      // Caso contrário, apenas reduzir o tempo total e atualizar status
+      await db.tasks.update(task.id, updates);
+      newTasks = newTasks.map(t => t.id === task.id ? { ...t, ...updates } : t);
+    }
+
+    set({ blocks: newBlocks, tasks: newTasks });
+    window.dispatchEvent(new CustomEvent('theomin:recalculate'));
+
+    // Retorna a função Undo
+    return async () => {
+      // Restaura a task
+      const currentTask = await db.tasks.get(task.id);
+      if (!currentTask) {
+        await db.tasks.add(taskSnapshot);
+      } else {
+        await db.tasks.update(task.id, { 
+          totalDuration: taskSnapshot.totalDuration,
+          updatedAt: taskSnapshot.updatedAt
+        });
+      }
+      
+      // Restaura o bloco
+      await db.blocks.put(blockSnapshot);
+
+      await get().loadTasks();
+      window.dispatchEvent(new CustomEvent('theomin:recalculate'));
+    };
   }
 }));

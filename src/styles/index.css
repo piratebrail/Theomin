@@ -441,6 +441,10 @@ select.input-field {
   font-weight: var(--weight-bold);
   color: var(--accent-base);
   letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-md) var(--space-xl) var(--space-lg);
 }
 .sidebar__nav {
   display: flex;

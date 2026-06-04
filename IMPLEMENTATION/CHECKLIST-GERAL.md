@@ -327,6 +327,9 @@
 
 ### 6.2 Integração
 
+- [x] Experiência de App Nativo (Modo Janela via scripts com isolamento `--user-data-dir`)
+- [x] Auto-Encerramento Inteligente (Heartbeat) em Background
+- [x] Sistema de Backup Nativo (Exportar/Importar DB via `dexie-export-import`)
 - [x] Fluxo de boot com seed database
 - [x] Splash screen (THEOMIN com animação)
 - [x] Seed database para primeiro acesso
@@ -365,28 +368,28 @@
 **Referência**: [12-COMPROMISSOS-IMPORTANTES.md](./12-COMPROMISSOS-IMPORTANTES.md)
 
 ### 7.1 Modelo de Dados
-- [ ] Criar `src/types/commitment.ts` com tipo `Commitment` e `CommitmentId`
-- [ ] Atualizar `src/db/database.ts` — adicionar tabela `commitments` na versão 2 do schema
-- [ ] Criar `src/stores/commitmentStore.ts` com CRUD + queries
+- [x] Criar `src/types/commitment.ts` com tipo `Commitment` e `CommitmentId`
+- [x] Atualizar `src/db/database.ts` — adicionar tabela `commitments` na versão 2 do schema
+- [x] Criar `src/stores/commitmentStore.ts` com CRUD + queries
 
 ### 7.2 Componentes
-- [ ] Criar `src/components/commitments/CommitmentsPanel.tsx` — painel principal
-- [ ] Criar `src/components/commitments/CommitmentItem.tsx` — item individual
-- [ ] Criar `src/components/commitments/CommitmentForm.tsx` — form inline
-- [ ] Criar `src/components/commitments/CommitmentsPanel.css` — estilos tema Obsidiana
+- [x] Criar `src/components/commitments/CommitmentsPanel.tsx` — painel principal
+- [x] Criar `src/components/commitments/CommitmentItem.tsx` — item individual
+- [x] Criar `src/components/commitments/CommitmentForm.tsx` — form inline
+- [x] Criar `src/components/commitments/CommitmentsPanel.css` — estilos tema Obsidiana
 
 ### 7.3 Integração
-- [ ] Modificar `src/components/ui/Sidebar.tsx` — renderizar `CommitmentsPanel` abaixo dos nav items
-- [ ] Ajustar CSS da sidebar para layout flex column correto
-- [ ] Modificar `src/App.tsx` — carregar `commitmentStore` no boot
+- [x] Modificar `src/components/ui/Sidebar.tsx` — renderizar `CommitmentsPanel` abaixo dos nav items
+- [x] Ajustar CSS da sidebar para layout flex column correto
+- [x] Modificar `src/App.tsx` — carregar `commitmentStore` no boot
 
 ### 7.4 Funcionalidades
-- [ ] Criação inline (form ao clicar `+`, Enter/✓ confirma, Escape/✕ cancela)
-- [ ] Conclusão via checkbox toggle
-- [ ] Exclusão via botão delete no hover
-- [ ] Ordenação por data mais próxima primeiro
-- [ ] Indicadores visuais de urgência (overdue, today, urgent)
-- [ ] Labels inteligentes de data (Hoje, Amanhã, em Xd, dd/MM)
+- [x] Criação inline (form ao clicar `+`, Enter/✓ confirma, Escape/✕ cancela)
+- [x] Conclusão via checkbox toggle
+- [x] Exclusão via botão delete no hover
+- [x] Ordenação por data mais próxima primeiro
+- [x] Indicadores visuais de urgência (overdue, today, urgent)
+- [x] Labels inteligentes de data (Hoje, Amanhã, em Xd, dd/MM)
 
 
 ---
@@ -410,9 +413,9 @@
 | **Progresso/Recálculo** | 14 | 4 | 0 | 10 |
 | **Sistema Atrasadas** | 11 | 6 | 4 | 1 |
 | **Integração** | 9 | 3 | 1 | 5 |
-| **Polish** | 18 | 1 | 1 | 16 |
-| **Compromissos Importantes** | 16 | 0 | 0 | 16 |
-| **TOTAL** | **244** | **159** | **16** | **69** |
+| **Polish** | 18 | 4 | 1 | 13 |
+| **Compromissos Importantes** | 16 | 16 | 0 | 0 |
+| **TOTAL** | **244** | **178** | **16** | **50** |
 
 ---
 

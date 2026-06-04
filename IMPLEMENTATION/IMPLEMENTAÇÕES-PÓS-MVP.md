@@ -32,3 +32,20 @@ O sistema de inicialização foi arquitetado para imitar o comportamento de um a
 - **Scripts Autônomos Inteligentes**: Os scripts `Start-Theomin-Windows.bat` e `Start-Theomin-Linux.sh` agora instalam dependências dinamicamente (se não houver `node_modules`).
 - **Execução Oculta (Ghost Mode)**: O terminal que roda o servidor Vite foi completamente silenciado. No Windows, ele cria um `.vbs` temporário para se relançar de forma totalmente invisível. No Linux, usa `nohup` desacoplado do painel do usuário.
 - **Auto-Shutdown por Heartbeat**: Como o servidor não tem janela visível para o usuário encerrá-lo, o front-end envia um "ping" silencioso a cada 3 segundos. Se a página web for fechada, o servidor no background detecta o silêncio de 10 segundos e emite um `process.exit(0)` para se auto-destruir e liberar a memória RAM do computador automaticamente.
+
+## 6. Funcionalidades Recentes (Atualizações Contínuas)
+- **Compromissos Importantes**:
+  - Edição in-place do título e data de compromissos diretamente no card.
+  - Vínculo Tarefa ↔ Compromisso: Tarefas agora podem ser atreladas a um compromisso específico através de um novo dropdown no formulário. Se o compromisso for marcado como concluído, todas as tarefas atreladas a ele são concluídas em cascata.
+- **Gerenciamento de Blocos no Calendário**:
+  - O usuário agora pode excluir (reduzir a duração total) blocos de tarefas diretamente pelo calendário clicando no ícone de lixeira no card.
+  - Se a tarefa tiver seu tempo esgotado (ficar com duração zero), ela é completamente excluída.
+  - Implementado sistema de notificação via Toast com a ação "Desfazer (Undo)". O toast conta com um timer inteligente que pausa quando o mouse está sobre ele, e a função Undo restaura perfeitamente os blocos, propriedades e status das tarefas no banco de dados.
+- **Lista de Tarefas (Aba)**:
+  - As tarefas 100% concluídas agora são isoladas em um grupo próprio na base da lista ("✅ CONCLUÍDAS"), organizado em ordem cronológica reversa.
+- **Polimento Visual & UX**:
+  - Correção do `z-index` da barra de hora atual do calendário, garantindo que ela não se sobreponha sobre a barra adesiva de datas.
+  - Refatoração total do visual do painel de navegação esquerdo (Sidebar), transformando links em botões polidos com caixas interativas, espaçamentos ideais e transição de hover.
+  - Correção da qualidade e dimensionamento do ícone Nativo Desktop: O ícone PNG gigante foi convertido em versões adequadas (incluindo 512x512) providenciando compatibilidade e exibição livre de pixels nos painéis de tarefas Linux.
+- **Bugfix Crítico no Scheduler Engine**:
+  - Corrigido um bug matemático no motor de alocação de blocos (scheduler) que resultava na dupla contagem de blocos (já alocados vs em geração) a cada virada de dia de uma tarefa contínua, causando "pulos" nos numerais das etiquetas dos blocos ("Bloco 5/10" pulando direto para "Bloco 9/10").

@@ -26,7 +26,7 @@ function blockHeight(durationMinutes: number, hourHeight: number): number {
 }
 
 export function TimeGrid({ date, blocks, breaks, isToday }: TimeGridProps) {
-  const hourHeight = 64; // px por hora
+  const hourHeight = 96; // px por hora
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const todayDateStr = getLocalDateString();
   const isPast = date < todayDateStr;

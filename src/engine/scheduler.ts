@@ -424,6 +424,8 @@ export function runScheduler(input: SchedulerInput): SchedulerOutput {
     let blocksAllocated = 0;
     let lastAllocatedDate = effectiveStart;
     
+    const alreadyAllocatedCount = allocatedBlocks.filter(b => b.taskId === task.id).length;
+    
     for (const [dateStr, daySlots] of updatedSlotMap) {
       if (dateStr < effectiveStart) continue;
       
@@ -444,7 +446,6 @@ export function runScheduler(input: SchedulerInput): SchedulerOutput {
       }
       
       const targetBlocksForThisDay = isHabit ? blocksPerRepetition : (blocksToAllocate - blocksAllocated);
-      const alreadyAllocatedCount = allocatedBlocks.filter(b => b.taskId === task.id).length;
       
       // Para hábitos, ver quantos blocos já existem neste dia específico (concluídos ou agendados)
       const existingToday = allocatedBlocks.filter(b => b.taskId === task.id && b.date === dateStr).length;

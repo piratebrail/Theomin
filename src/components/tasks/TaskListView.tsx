@@ -19,15 +19,24 @@ export function TaskListView() {
   // Agrupar tarefas por deadline
   // Muito básico: vamos apenas ordenar e agrupar por string de data por enquanto.
   
-  const groupedTasks: Record<string, Task[]> = {};
+  const pendingTasks = tasks.filter(t => t.status !== 'completed');
+  const completedTasks = tasks.filter(t => t.status === 'completed');
+
+  const groupedPending: Record<string, Task[]> = {};
   
-  tasks.forEach(task => {
+  pendingTasks.forEach(task => {
     const key = task.deadline || 'Sem data';
-    if (!groupedTasks[key]) groupedTasks[key] = [];
-    groupedTasks[key].push(task);
+    if (!groupedPending[key]) groupedPending[key] = [];
+    groupedPending[key].push(task);
   });
   
-  const sortedDates = Object.keys(groupedTasks).sort(); // YYYY-MM-DD sorteia bonitinho
+  const sortedPendingDates = Object.keys(groupedPending).sort(); // YYYY-MM-DD sorteia bonitinho
+
+  const sortedCompleted = [...completedTasks].sort((a, b) => {
+    const dateA = a.deadline || '0000-00-00';
+    const dateB = b.deadline || '0000-00-00';
+    return dateB.localeCompare(dateA); // Ordem decrescente (vence primeiro vai pro final)
+  });
   
   const handleSave = async (task: Task) => {
     if (editingTask) {
@@ -75,7 +84,7 @@ export function TaskListView() {
         <Plus size={20} /> Nova Tarefa
       </button>
 
-      {sortedDates.map(date => {
+      {sortedPendingDates.map(date => {
         // Checar se é overdue ou urgent
         const now = new Date();
         now.setHours(0, 0, 0, 0);
@@ -86,21 +95,34 @@ export function TaskListView() {
         const isUrgent = diffDays >= 0 && diffDays <= 1; // Hoje ou amanhã
         
         let label = `📅 Vence em ${taskDate.toLocaleDateString('pt-BR')}`;
-        if (isOverdue) label = `⚠️ Atrasado (Venceu em ${taskDate.toLocaleDateString('pt-BR')})`;
-        if (diffDays === 0) label = '📅 Vence Hoje';
-        if (diffDays === 1) label = '📅 Vence Amanhã';
+        if (isOverdue) label = `⚠️ ATRASADO (VENCEU EM ${taskDate.toLocaleDateString('pt-BR')})`;
+        else if (diffDays === 0) label = '📅 VENCE HOJE';
+        else if (diffDays === 1) label = '📅 VENCE AMANHÃ';
+        else if (date === 'Sem data') label = '📦 SEM DATA';
 
         return (
           <TaskGroup 
             key={date}
             dateLabel={label}
-            isOverdue={isOverdue}
-            isUrgent={isUrgent}
-            tasks={groupedTasks[date].sort((a, b) => a.name.localeCompare(b.name))}
+            isOverdue={isOverdue && date !== 'Sem data'}
+            isUrgent={isUrgent && date !== 'Sem data'}
+            tasks={groupedPending[date].sort((a, b) => a.name.localeCompare(b.name))}
             onTaskClick={handleEdit}
           />
         );
       })}
+
+      {sortedCompleted.length > 0 && (
+        <div style={{ marginTop: 'var(--space-2xl)' }}>
+          <TaskGroup 
+            dateLabel="✅ CONCLUÍDAS"
+            isOverdue={false}
+            isUrgent={false}
+            tasks={sortedCompleted}
+            onTaskClick={handleEdit}
+          />
+        </div>
+      )}
 
       {isFormOpen && (
         <TaskForm 

@@ -31,8 +31,15 @@ if not exist "node_modules\" (
 :: Garante que não há processos zumbis segurando a porta do Theomin
 for /f "tokens=5" %%a in ('netstat -aon ^| find ":5173" ^| find "LISTENING"') do taskkill /f /pid %%a >nul 2>&1
 
+:: Define o navegador a ser usado no modo App
+set BROWSER_CMD=start http://localhost:5173
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe" >nul 2>&1
+if %errorlevel% equ 0 set BROWSER_CMD=start chrome --app=http://localhost:5173
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe" >nul 2>&1
+if %errorlevel% equ 0 set BROWSER_CMD=start msedge --app=http://localhost:5173
+
 :: Inicia o navegador aguardando o servidor ligar
-start "" /B cmd /c "for /l %%x in (1, 1, 30) do (curl -s http://localhost:5173 >nul && (start http://localhost:5173 & exit) || timeout /t 1 >nul)"
+start "" /B cmd /c "for /l %%x in (1, 1, 30) do (curl -s http://localhost:5173 >nul && (%BROWSER_CMD% & exit) || timeout /t 1 >nul)"
 
 :: Inicia o servidor Vite
 call npm run dev

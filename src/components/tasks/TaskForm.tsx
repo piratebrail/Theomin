@@ -10,6 +10,7 @@ import { RecurrenceConfigPanel } from './RecurrenceConfig';
 import { FixedTimeConfigPanel } from './FixedTimeConfig';
 import { useTaskStore } from '@/stores/taskStore';
 import { useClassStore } from '@/stores/classStore';
+import { useCommitmentStore } from '@/stores/commitmentStore';
 import { Task, RecurrenceConfig, FixedTimeConfig } from '@/types/task';
 import { nanoid } from 'nanoid';
 import { useToast } from '@/components/ui/Toast';
@@ -42,6 +43,7 @@ export function TaskForm({ initialData, onClose, onSave }: TaskFormProps) {
   const [deadline, setDeadline] = useState(initialData?.deadline || getLocalDateString(defaultDeadline));
   
   const [dependsOn, setDependsOn] = useState<string[]>(initialData?.dependsOn || []);
+  const [commitmentId, setCommitmentId] = useState<string>(initialData?.commitmentId || '');
   const [notes, setNotes] = useState(initialData?.notes || '');
 
   const [isRecurring, setIsRecurring] = useState(initialData?.isRecurring || false);
@@ -69,6 +71,7 @@ export function TaskForm({ initialData, onClose, onSave }: TaskFormProps) {
       startDate,
       deadline,
       dependsOn,
+      commitmentId: commitmentId || undefined,
       notes,
       isRecurring,
       recurrence: isRecurring ? recurrenceConfig : undefined,
@@ -105,6 +108,18 @@ export function TaskForm({ initialData, onClose, onSave }: TaskFormProps) {
     label: c.name,
     value: c.id
   }));
+
+  const commitments = useCommitmentStore(state => state.commitments);
+  const commitmentOptions = [
+    { label: 'Nenhum', value: '' },
+    ...commitments
+      .filter(c => !c.completed || c.id === initialData?.commitmentId)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map(c => ({
+        label: `${c.title} (${c.date.split('T')[0].split('-').reverse().join('/')})`,
+        value: c.id
+      }))
+  ];
 
   return (
     <Modal
@@ -166,6 +181,13 @@ export function TaskForm({ initialData, onClose, onSave }: TaskFormProps) {
           currentTaskId={initialData?.id}
           selectedIds={dependsOn}
           onChange={setDependsOn}
+        />
+
+        <Select
+          label="Compromisso Vinculado"
+          value={commitmentId}
+          onChange={(e) => setCommitmentId(e.target.value)}
+          options={commitmentOptions}
         />
 
         <div>
